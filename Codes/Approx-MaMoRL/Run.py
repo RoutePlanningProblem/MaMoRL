@@ -16,12 +16,12 @@ goalSensed = False
 """Set the values here"""
 noOfShip, deg =  [],[] #To run different values so it will run for each instance automatically or just one value for a particular run
 noOfIter = 10  #Number of iterations for each set of data.
-noOfShip = [2]  # Set number of ships here
+noOfShip = [3]  # Set number of ships here
 deg = [9] #Set the MAX outdeg here
-noNodes= 200 # The number of nodes in the grid
-filename = 'input/200nodes_441edges_degree9.csv' #Name of file with input grid 
-resultPath='results.csv' #Name of path to store results
-
+noNodes= 400 # The number of nodes in the grid
+filename = 'inputs/Varying_Nodes/400nodes_846edges_degree9.csv' #Name of file with input grid
+resultPath ='results.csv' #Name of path to store results
+cFreq = 3
 
 # Define nodes in rawTest in case using on smaller graph, else leave empty 
 rawTest = []
@@ -369,7 +369,7 @@ def completeDecision(ships, Graph, actionComb, nShip, t, qTable):  # calculate a
             # get other ships locations every t hops
             for j in range(0, nShip):
                 if i != j:
-                    if t % 3 == 0 or j in shipArr:
+                    if t % cFreq == 0 or j in shipArr:
                         state[j] = ships[j].pos
                         ships[i].otherPos[j] = ships[j].pos
                     state[j] = ships[i].otherPos[j]
@@ -779,7 +779,7 @@ if __name__ == "__main__":
                 failed,count=1,0
 
                 while failed:
-                    failed=mainFunc()
+                    failed = mainFunc()
                     count += 1 #keep track of number of collisions
                 with open(resultPath, mode='a') as csv_file:
                     fieldnames =['No of Ships', 'out degree', 'Goal Node',  'Ship Location',   'Max time',  'Total Fuel', 'Running time', 'qSize', 'pSize']

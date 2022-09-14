@@ -10,16 +10,16 @@ from decision import speedChoice, actionChoice
 sendInterval = 1 #Ships'sensing raduis
 goalSensed = False
 
-"""Set the values here"""
-noOfShip,deg=[],[] #To run different values so it will run for each instance automatically or just one value for a particular run
+noOfShip, deg =  [],[] #To run different values so it will run for each instance automatically or just one value for a particular run
+noOfIter = 10  #Number of iterations for each set of data.
 noOfShip = [2]  # Set number of ships here
 deg = [7] #Set the MAX outdeg here
-noOfIter = 10 #Number of iterations for each set of data.
-filename = 'input/704nodes_1399edges_degree7.csv' #Name of file with input grid
-resultPath='results.csv' # Directory to save the results
+fileName = 'inputs/Varying_Degree/704nodes_1399edges_degree7.csv' #Name of file with input grid
+resultPath = 'results.csv' # Directory to save the results
+cFreq = 3
 
 #Set of starting of points to be defined here
-starts=[[237, 111],
+starts = [[237, 111],
 [315, 104],
 [344, 371],
 [586, 197],
@@ -42,11 +42,8 @@ goalNodes = [56,
 680,
 487]
 
-
 # Define nodes in rawTest in case using on smaller graph, else leave empty
-rawTest = []
-
-shipTracker = {}
+rawTest=[]
 
 class node:
 
@@ -65,6 +62,7 @@ class node:
         self.pos = index  # position
         self.rawPos = addPos
         self.loc = loc
+
 
 
 class Ship:
@@ -96,23 +94,22 @@ class Ship:
         self.pos = randint(0, len(Graph) - 1)  # position
         self.time = 0  # time
 
-
-    def assignFixedLocs (self,Graph,loc):
+    def assignFixedLocs(self, Graph, loc):
         '''Assign a ship location as a fixed parameter, instead of randomly'''
         self.pos = loc  # position
         self.time = 0  # time
 
 
-    def __init__(self, shipNo, Graph,startLoc):  # initialize ship members
-
+    def __init__(self, shipNo, Graph, startLoc):  # initialize ship members
+        global goalNode
         self.Num = shipNo
-        #self.randLoc(Graph) # randomly reloc ships
+        # self.randLoc(Graph)  # randomly reloc ships
         self.assignFixedLocs(Graph, loc=startLoc)
         self.dest = goalNode  # destination
         self.pTable = dict()
         self.time = 0
         self.speed = 0 # Initial speed
-        self.maxSpeed = 5  # max speed of ships
+        self.maxSpeed = 5  # Max speed of ships
         self.oldPos = self.pos
         self.movPos = [0, 0]
         self.fuel = 0
@@ -121,17 +118,16 @@ class Ship:
 
 
 
-def loadGraph():  # get graph from csv
+def loadGraph():  # get graph from csv, and load for running
     rawData = []
     global outDeg
-    with open(filename) as csvfile:
+    with open(fileName) as csvfile:
         rawData = list(csv.reader(csvfile, delimiter=','))
     rawData.pop(0)
     xPoints = []
     yPoints = []
 
-
-    smallerGraph = False #Set true if wanting smaller subset of graph, rawTest must be defined
+    smallerGraph = False  #Set true if wanting smaller subset of graph, rawTest must be defined
 
     global rawTest
     if not smallerGraph:
@@ -154,6 +150,7 @@ def loadGraph():  # get graph from csv
     Graph = []
     n = 0
     graphPoints = []
+
 
 
     # Load from data to links
@@ -183,6 +180,7 @@ def loadGraph():  # get graph from csv
 
     minMax = (xMin, yMin, xMax, yMax)
 
+
     # links to nodes 0 - n
     for i in range(0, len(Graph)):
         newPossible = dict()
@@ -193,7 +191,6 @@ def loadGraph():  # get graph from csv
         Graph[i].possibleNodes = newPossible
 
     return Graph
-
 
 def djikstra(pos, Graph, shipSeen):  # modified djikstra algorithm
     Q = []
@@ -232,7 +229,6 @@ def djikstra(pos, Graph, shipSeen):  # modified djikstra algorithm
     return corners, dist, prev
 
 
-
 # def initShips(Graph):  # init ship objects
 #     ships = []
 #
@@ -247,22 +243,16 @@ def djikstra(pos, Graph, shipSeen):  # modified djikstra algorithm
 
 '''use the following function for the fixed location scenario, else use the above one '''
 
-def initShips(Graph, startLocs):  # init ship objects
-    global shipTracker  # Starting location of n ships, defined at top
+def initShips(Graph):  # init ship objects
+    global startLocs  # Starting location of n ships, defined at top
     ships = []
     print("Starting state of n ships: "+ str (startLocs))
     for i in range(0, nShip):
         ship = Ship(i, Graph,startLocs[i])
         ships.append(ship)
-
-        if (i not in shipTracker):
-            shipTracker[i] = []
-            shipTracker[i].append(startLocs[i])
-        else:
-            shipTracker[i].append(startLocs[i])
-
     ships = np.array(ships)
     return ships
+
 
 def detAdjNum(Graph, n, shipSeen):  # return outdegree
     count = 0
@@ -311,6 +301,7 @@ def printMaxTime(ships):  # print time at end
     global max1, times, fuels
     max1 = 0
 
+    # calc max values
     times = []
     fuels = []
     # calc max values
@@ -326,8 +317,9 @@ def printMaxTime(ships):  # print time at end
     print("Fuels for n ships : " + str(fuels))
     print()
 
-    print("Max time for n ships is: " + str(max))
+    print("Max time for n ships is: " + str(max1))
     print("Sum of all fuel is : "+ str(sum(fuels)))
+
 
     return max1
 
@@ -338,6 +330,15 @@ def actionToPos(pos, action, Graph):  # convert action to node position
 
     return list(Graph[pos].possibleNodes.keys())[action], list(Graph[pos].possibleNodes.values())[action]
 
+
+def shipProximity(shipPos, Graph, maxNotSeen, i, nShip):  # ship proximity for p
+    n = 0
+    for p in Graph[shipPos[i]].possibleNodes.keys():
+        for j in range(0, nShip):
+            if j != i:
+                if shipPos[j] in Graph[p].possibleNodes.keys():
+                    maxNotSeen[n + 1] = 1
+        n += 1
 
 
 def shipProximityQ(pos, shipPos, Graph, i, n, nShip, dest, hopOut):  # ship proximity for q
@@ -385,7 +386,7 @@ def completeDecision(ships, Graph, actionComb, nShip, t, qTable):  # calculate a
             # get other ships locations every t hops
             for j in range(0, nShip):
                 if i != j:
-                    if t % 3 == 0 or j in shipArr:
+                    if t % cFreq == 0 or j in shipArr:
                         state[j] = ships[j].pos
                         ships[i].otherPos[j] = ships[j].pos
                     state[j] = ships[i].otherPos[j]
@@ -448,7 +449,7 @@ def completeDecision(ships, Graph, actionComb, nShip, t, qTable):  # calculate a
             # get max V
             for action in actionComb[i]:
                 # proximity to another ship
-                oldProx = shipProximityQ(ships[i].pos, ships[i].otherPos, Graph, i, 1, nShip,ships[i].dest, 1)
+                oldProx = shipProximityQ(ships[i].pos, ships[i].otherPos, Graph, i, 1, nShip, ships[i].dest, 1)
                 prox = shipProximityQ(actionToPos(ships[i].pos, action, Graph)[0], ships[i].otherPos, Graph, i, 1, nShip, ships[i].dest, 1)
 
                 if oldProx == 1 and prox > 1:
@@ -486,8 +487,8 @@ def completeDecision(ships, Graph, actionComb, nShip, t, qTable):  # calculate a
 
                 if (action == outDeg or qArr[action + 1][0] != 1):
 
-                    qTemp = actionChoice(i, 0, action, 0, qTable, ships, qArrOut, None)[
-                        0]  # get action from decision function
+                    qTemp = actionChoice(i, 0, action, 0, qTable, ships, qArrOut, None)[0]  # get action from decision function
+
                     if qTemp > 0:
                         nearCorner = True
                     if (qTemp > qVal):
@@ -509,7 +510,8 @@ def completeDecision(ships, Graph, actionComb, nShip, t, qTable):  # calculate a
                     if goalDir == actionOut[i]:
                         qArrOut[j + 2] = 1
                     qArrOut[j + 3] = 0
-                    qTemp = speedChoice(i, 0, actionOut[i], speed, qTable, ships, qArrOut, None)[0]  # get speed from decision function
+                    qTemp = actionChoice(i, 0, actionOut[i], speed, qTable, ships, qArrOut, None)[0]  # get speed from decision function
+
                     if (qTemp > qVal):
                         qVal = qTemp
                         ships[i].speed = speed  # update speeds
@@ -525,10 +527,9 @@ def completeDecision(ships, Graph, actionComb, nShip, t, qTable):  # calculate a
     return actionOut
 
 
-
-
 def calcNewPos(ships, Graph, qTable, t, test=1):  # Take action
     global goalSensed
+    global iii
     if test < 0:
         a = 0.6
     state = ()
@@ -552,12 +553,6 @@ def calcNewPos(ships, Graph, qTable, t, test=1):  # Take action
         # update pos
         ships[i].oldPos = ships[i].pos
         newPos, timeTemp = actionToPos(ships[i].pos, actionOut[i], Graph)
-
-        if (i not in shipTracker):
-            shipTracker[i] = []
-            shipTracker[i].append(newPos)
-        else:
-            shipTracker[i].append(newPos)
 
 
         # update time
@@ -593,7 +588,6 @@ def calcNewPos(ships, Graph, qTable, t, test=1):  # Take action
                     ships[j].seen.append(ships[j].dest)
                     continue
 
-
     # update total time
     for i in range(0, nShip):
         if (ships[i].pos == ships[i].oldPos and ships[i].pos != ships[i].dest):
@@ -601,12 +595,12 @@ def calcNewPos(ships, Graph, qTable, t, test=1):  # Take action
     t += 1
     return qTable, ships, t
 
+
 ts = 0
 te = 0
 
-GraphNodeIdToLatLong = {}
-
 def mainFunc():
+
     global GraphNodeIdToLatLong
     global goalSensed
     global seen
@@ -617,31 +611,25 @@ def mainFunc():
 
     ts = time.time()
     # init
-    Graph = loadGraph() # initialize the graph
+    Graph = loadGraph()  # initialize the graph
 
-    for n in Graph:
-        GraphNodeIdToLatLong[n.pos] = n.loc
-
-
-
-    startLocs=start[:]
     # load data
     qTable = np.load("data/qData.npy")
     # Get size of the Q table
-    qSize = str(qTable.itemsize * qTable.size)
-    ships = initShips(Graph, startLocs)
+    qSize= str(qTable.itemsize * qTable.size)
+    ships = initShips(Graph)
+
 
     crashed = False
     t = 0
     iter = 0
-
 
     # seen from initial position
     global seen
     seen = []
     for i in range(0, len(ships)):
         seen.append(ships[i].pos)
-        for j in Graph[ships[i].pos].possibleNodes.keys():
+        for j in Graph[ships[i].pos].possibleNodes.keys():  # 11 - possible neighbours from each ships curr location
             seen.append(j)
     for i in range(0, len(ships)):
         ships[i].seen = seen.copy()
@@ -652,14 +640,13 @@ def mainFunc():
         refresh = 0
         xChange = 1
 
-        # # if end or collision
+        # if end or collision
         if refresh or t > 400 or collisiontDetect(ships):  # if refresh position or collision
             print("COLLIDED")
             ts = time.time()
             goalSensed = False
             seen = []
             return True
-
             exit()
             # refresh positions
             reloadShips(ships, Graph)
@@ -677,7 +664,6 @@ def mainFunc():
             seen = []
             goalSensed = False
 
-
             iterTime += printMaxTime(ships)
 
             print("All at goal")
@@ -687,20 +673,6 @@ def mainFunc():
             return False
 
 
-            for key in shipTracker:
-                currNodes = shipTracker[key]
-                print("Lat Long route for ship "+str(key))
-
-                for n in currNodes:
-
-                    latitude,longitude = GraphNodeIdToLatLong[n]
-                    print(str(latitude) + "," + str(longitude))
-
-                print()
-
-
-
-            print("Ship locations : " + str(shipTracker))
             exit()
             time.sleep(5)
 
@@ -715,13 +687,13 @@ def mainFunc():
             t = 0
             iter += 1
 
-        if ( xChange > 0):
+        if (xChange > 0):
+
             # take action
             qTable, ships, t = calcNewPos(ships, Graph, qTable, t, 1)
 
         if iter == 100:
             break
-
 
     quit()
 
@@ -736,8 +708,8 @@ if __name__ == "__main__":
         goalNode = goalNodes[m] # Set the node index you want as the goal
         startLocs=starts[m] #starting locations
         failed= False
-        # while failed:
-        failed=mainFunc()
+
+        failed = mainFunc()
 
         if failed:
             with open(resultPath, mode='a') as csv_file:
@@ -745,8 +717,8 @@ if __name__ == "__main__":
                 writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
                 if csv_file.tell() == 0:
                     writer.writeheader()
-                writer.writerow({'No of Ships': nShip, 'out degree': outDeg, 'Goal Node': goalNode, 'Ship Location': str(start),
-                     'Max time': 'NaN',  'Total Fuel':'NaN','Running time': 'collided', 'qSize':str(qSize)})
+                writer.writerow({'No of Ships': nShip, 'out degree': outDeg, 'Goal Node': goalNode,  'Ship Location': str(startLocs),
+                     'Max time': 'NaN',  'Total Fuel':'NaN','Running time': 'collided', 'qSize':str(qSize) })
 
         else:
             with open(resultPath, mode='a') as csv_file:
@@ -754,5 +726,5 @@ if __name__ == "__main__":
                     writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
                     if csv_file.tell() == 0:
                         writer.writeheader()
-                    writer.writerow({'No of Ships': nShip, 'out degree': outDeg, 'Goal Node': goalNode, 'Ship Location':str(start),
+                    writer.writerow({'No of Ships': nShip, 'out degree': outDeg, 'Goal Node': goalNode,  'Ship Location':str(startLocs),
                       'Max time':str(max1),  'Total Fuel':str(sum(fuels)), 'Running time':str(te - ts), 'qSize':str(qSize)})

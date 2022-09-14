@@ -9,7 +9,6 @@ import matplotlib.pyplot as plt
 from keras.models import Sequential
 from sklearn.model_selection import train_test_split
 
-
 # Training Dataset
 
 #Start time
@@ -87,7 +86,7 @@ plt.show()
 
 
 #Save model
-model.save('Neural_Net_q')
+model.save('NN_Models/Neural_Net_q')
 
 #Load model
 reconstructed_model = keras.models.load_model("Neural_Net_q")

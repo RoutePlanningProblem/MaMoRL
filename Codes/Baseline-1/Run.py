@@ -15,8 +15,9 @@ noOfShip, deg =  [],[] #To run different values so it will run for each instance
 noOfIter = 10  #Number of iterations for each set of data.
 noOfShip = [2]  # Set number of ships here
 deg = [7] #Set the MAX outdeg here
-filename = 'input/704nodes_1399edges_degree7.csv' #Name of file with input grid
-resultPath='results.csv' # Directory to save the results
+fileName = 'inputs/Varying_Degree/704nodes_1399edges_degree7.csv' #Name of file with input grid
+resultPath = 'results.csv' # Directory to save the results
+cFreq = 3
 
 #Set of starting of points to be defined here
 starts=[[237, 111],
@@ -122,7 +123,7 @@ class Ship:
 def loadGraph():  # get graph from csv, and load for running
     rawData = []
     global outDeg
-    with open(filename) as csvfile:
+    with open(fileName) as csvfile:
         rawData = list(csv.reader(csvfile, delimiter=','))
     rawData.pop(0)
     xPoints = []
@@ -392,7 +393,7 @@ def completeDecision(ships, Graph, actionComb, nShip, t, qTable):  # calculate a
             # get other ships locations every t hops
             for j in range(0, nShip):
                 if i != j:
-                    if t % 3 == 0 or j in shipArr:
+                    if t % cFreq == 0 or j in shipArr:
                         state[j] = ships[j].pos
                         ships[i].otherPos[j] = ships[j].pos
                     state[j] = ships[i].otherPos[j]
@@ -799,7 +800,7 @@ if __name__ == "__main__":
         failed= False
         iii=-1
 
-        failed=initPyGame()
+        failed = mainFunc()
 
         if failed:
             with open(resultPath, mode='a') as csv_file:

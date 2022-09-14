@@ -16,13 +16,14 @@ Train before using
 noOfShip,deg = [],[] #To run different values so it will run for each instance automatically or just one value for a particular run
 noOfShip = [2]  #Set number of ships 
 deg=[9] #Set outdegree of grid 
-noOfIter=10 #The number of times to run the code for diffwrwnt starting points and destinations
+noOfIter = 10 #The number of times to run the code for diffwrwnt starting points and destinations
 sendInterval = 1 #ships' sensing raduis
 goalSensed = False
 seen = []
-fileName='200nodes_441edges_degree9.csv'  #input grid directory
+fileName='inputs/200nodes_441edges_degree9.csv'  #input grid directory
 resultPath='result.csv' #directory and fileanme to store results
-noNodes= 200 #number of nodes in the grid
+noNodes = 200 #number of nodes in the grid
+cFreq = 3 # communication interval
 
 
 rawTest = []
@@ -304,7 +305,7 @@ def calcNewPos(ships, Graph, qTable, t, test=1):  # Take action based on q and p
             state[i] = ships[i].pos
             for j in range(0, nShip):
                 if i != j:
-                    if t % 3 == 0:
+                    if t % cFreq == 0:
                         state[j] = ships[j].pos
                         ships[i].otherPos = ships[j].pos
                     state[j] = ships[i].otherPos

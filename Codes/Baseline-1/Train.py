@@ -8,14 +8,14 @@ import importlib
 
 
 # Change below for desired values
-nShip = 3 #Put number of ships here
+nShip = 2 #Put number of ships here
 maxSpeed = np.array ([5]*nShip) #Set the max speed here, np array size must equal number of ships
 epoch = 10 #number of epoch to train model
 a = 0.001
 B = np.random.randint(80, 90, nShip) / 10000
 graphLen = 40  # Must keep low for better training
-outDeg = 9 #Set outdegree here
-fileName= "input/400nodes_846edges_degree9.csv" #Set input grid file here
+outDeg = 7 #Set outdegree here
+fileName= "inputs/Varying_Degree/704nodes_1399edges_degree7.csv" #Set input grid file here
 
 # Automatically filled
 mod = []
@@ -32,7 +32,7 @@ def loadModules():  # Load reward Modules from modules folder
 def loadGraph():  # load graph from csv
     # Load data from file
     global outDeg
-    with open(filename) as csvfile:
+    with open(fileName) as csvfile:
         rawData = list(csv.reader(csvfile, delimiter=','))
 
     #LOAD each line of csv one by one, remove first line as its the headers containing column heading for line. Put in list.

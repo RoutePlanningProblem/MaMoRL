@@ -22,10 +22,11 @@ noOfShip = [3]  # Set number of ships here
 deg = [9] #Set the MAX outdeg here
 noOfIter = 10 #Number of iterations for each set of data.
 maxSpeed = np.array ([5]*noOfShip[0]) #Set the max speed here, np array size must equal number of ships
-filename = "input/400nodes_846edges_degree9.csv" #Name of file with input grid
-resultPath='results.csv' # Directory to save the results
-noNodes=400 #number of nodes in the grid
-region=240 #number of nodes in the known region. Keep it 60% of noNodes
+filename = "inputs/Varying_Nodes/400nodes_846edges_degree9.csv" #Name of file with input grid
+resultPath ='results.csv' # Directory to save the results
+noNodes = 400 #number of nodes in the grid
+region = 240 #number of nodes in the known region. Keep it 60% of noNodes
+cFreq = 3
 
 # Define nodes in rawTest in case using on smaller graph, else leave empty
 rawTest = []
@@ -565,7 +566,7 @@ def completeDecision(ships, Graph, actionComb, nShip, t, qTable):  # calculate a
             # get other ships locations every t hops
             for j in range(0, nShip):
                 if i != j:
-                    if t % 3 == 0 or j in shipArr:
+                    if t % cFreq == 0 or j in shipArr:
                         state[j] = ships[j].pos
                         ships[i].otherPos[j] = ships[j].pos
                     state[j] = ships[i].otherPos[j]

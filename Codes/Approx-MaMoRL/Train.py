@@ -14,7 +14,7 @@ a = 0.001
 B = np.random.randint(80, 90, nShip) / 10000
 graphLen = 40  # Must keep low for better training
 outDeg = 9 #Set outdegree here 
-fileName= "input/400nodes_846edges_degree9.csv" #Set input grid file here
+fileName= "inputs/Varying_Nodes/400nodes_846edges_degree9.csv" #Set input grid file here
 
 # Automatically filled
 mod = []

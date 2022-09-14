@@ -11,12 +11,12 @@ from tensorflow import keras
 sendInterval = 1 #Ships'sensing raduis
 goalSensed = False
 
-
 """Set the values here"""
 nShip = 2  # Set number of ships here
 outDeg = 6 #Set the MAX outdeg here
-goalNode=1 # Set the node index you want as the goal
-filename = 'input/200nodes_441edges_degree9.csv' #Name of file with input grid
+goalNode = 1 # Set the node index you want as the goal
+filename = 'input/50nodes_93Edges_degree6.csv' #Name of file with input grid
+cFreq = 3
 
 # Define nodes in rawTest in case using on smaller graph, else leave empty
 rawTest = []
@@ -356,9 +356,9 @@ def completeDecision(ships, Graph, actionComb, nShip, t):  # calculate actions
     global outDeg
 
     # Load NN models
-    reconstructed_model_q = keras.models.load_model("Neural_Net_q")
-    reconstructed_model_p01 = keras.models.load_model("Neural_Net_p01")
-    reconstructed_model_p10 = keras.models.load_model("Neural_Net_p10")
+    reconstructed_model_q = keras.models.load_model("NN_Models/Neural_Net_q")
+    reconstructed_model_p01 = keras.models.load_model("NN_Models/Neural_Net_p01")
+    reconstructed_model_p10 = keras.models.load_model("NN_Models/Neural_Net_p10")
 
 
     actionOut = np.full(nShip, outDeg).tolist()
@@ -374,7 +374,7 @@ def completeDecision(ships, Graph, actionComb, nShip, t):  # calculate actions
             # get other ships locations every t hops
             for j in range(0, nShip):
                 if i != j:
-                    if t % 3 == 0 or j in shipArr:
+                    if t % cFreq == 0 or j in shipArr:
                         state[j] = ships[j].pos
                         ships[i].otherPos[j] = ships[j].pos
                     state[j] = ships[i].otherPos[j]

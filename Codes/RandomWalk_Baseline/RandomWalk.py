@@ -10,23 +10,19 @@ import sys
 from statistics import *
 from scipy.spatial import distance
 
-
-
-
 nShips = 2  # Set number of ships here
 outDeg = 7 #Set the MAX outdeg here
 noOfIter = 10 #Number of iterations for each set of data.
-noNodes=704 # Number of nodes in the grid
+noNodes = 704 # Number of nodes in the grid
 maxSpeed = np.array ([5]*nShips) #Set the max speed here, np array size must equal number of ships
 
-sensingRadius=[1]*nShips # ships' sensing radius
-communicationInterval = 1 # ships' communication Interval
-
-filename = 'input/704nodes_1399edges_degree7.csv' #Set input grid file here
+sensingRadius = [1]*nShips # ships' sensing radius
+# communicationInterval = 1 # ships' communication Interval
+filename = 'inputs/Varying_Degree/704nodes_1399edges_degree7.csv' #Set input grid file here
 resultPath='results.csv' #Name of file with input grid
 
 #Set of starting of points to be defined here
-starts=[[237, 111],
+starts = [[237, 111],
 [315, 104],
 [344, 371],
 [586, 197],
@@ -199,8 +195,11 @@ def main(startPoints): # main function
                 if i!=j:
                     if nextPos[i]==nextPos[j]:
                         print("collision")
-                        crashed=True
+                        crashed = True
                         return True
+        if crashed:
+            return True
+            exit()
 
         for i in range(nShips):
 
@@ -218,7 +217,7 @@ def main(startPoints): # main function
                 fuels[i]+= times[i] * (0.2525 * math.pow((speed[i] + 10) * 2, 2) - 1.6307 * (speed[i] + 10) * 2)
                 print("ship", str(i) , "Reached Goal")
                 order.append(str(i))
-                crashed=True
+                crashed = True
 
             # Update time and fuel
             times[i]+=  weights[(current[i], nextPos[i])]/speed[i]
@@ -250,7 +249,7 @@ for m in range(noOfIter):
     goalNode = goalNodes[m]  # Set the node index you want as the goal
     start = starts[m] #starting locations
 
-    failed =1
+    failed = 1
     failed = main(start)
 
     if failed:

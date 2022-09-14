@@ -24,7 +24,7 @@ for rCount in range(1, 4):
 
 
 nShip = 2 #Number of ships
-graphLen = 200 #Number of nodes in teh grid
+graphLen = 200 #Number of nodes in the grid
 outDeg = 9  # change the outdegree here
 
 graphLink = -np.ones((graphLen, outDeg), dtype=np.int32)
@@ -34,7 +34,7 @@ graphMax = np.zeros(graphLen, dtype=np.int32)
 shipPos = np.zeros(nShip, dtype=np.int32) #ships' positions initialization
 maxSpeed = np.array([5]*nShip) #Set max speed here
 
-fileNameForGrid = "200nodes_441edges_degree9.csv" #Name of csv file containing grid
+fileNameForGrid = "inputs/200nodes_441edges_degree9.csv" #Name of csv file containing grid
 
 def loadGraph():  # load graph from csv and setup for training 
     global outDeg
@@ -312,12 +312,12 @@ if __name__ == "__main__":
     print(getsizeof(pTable))
 
     #Save q table -- warning might be very large for mid sized grids 
-    np.save("qData.npy", qTable)
+    np.save("data/qData.npy", qTable)
 
 
     #Save p table -- warning might be very large for mid sized grids 
     for i in range(0, nShip):
         for j in range(0, nShip):
             if (i != j):
-                np.save(str(i) + '-' + str(j) + '-' + 'pData', pTable[i][j])
+                np.save("data/ " + str(i) + '-' + str(j) + '-' + 'pData', pTable[i][j])
 
