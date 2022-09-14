@@ -8,22 +8,22 @@ You can find the required dependencies to run all the codes in the file "Require
 
 To run code, import entire folder into IDE. PyCharm is one option. Import as a project 
 
-# 2) Input Graph
 
-Requires a .csv file at `input` directory that is in the following format:
+# 2) Hardware Requirements:
 
-```
-NodeID, Latitude, Longitude, Neighbor1, Distance1, Neighbor2, Distance2, Neighbor3, Distance3, Neighbor4, Distance4, Neighbor5, Distance5, .... Neighbor N, Distance N
-```
+Most of the experiments are run on OS Big Sur with 2.4 GHz Quad-Core Intel Core i5 Processor and 16 GB RAM.
+
+ Experiments involving exact MaMoRL are run on a 64-bit OS server with 3.5 GHz 11th Gen Intel Core i9 and 128 GB RAM.
 
 
 # 3) Layout of folders
 
-There are three folders:
+There are two folders:
 
-1. Plots : Contains all the plots even the ones that are not presented in the draft.
-2. Grids : Contains all the synthetic and real-world grids.
-3. Codes : Contains different folders for each algorithm:
+1. Codes : Contains different folders for each algorithm.
+2. Plots : Contains all the plots and their source file even the ones that are not presented in the draft.
+
+The Codes folder contains the following subfolders:
 
     a) Exact Model (MaMoRL)
 
@@ -31,53 +31,16 @@ There are three folders:
 
     c) Approx-MaMoRL with Partial Knowledge
 
-    d) Neural Network Model  (NN-Approx-MaMoRL)
+    d) Baseline-1
 
-    e) Baseline-1
+    e) Baseline-2
 
-    f) Baseline-2
+    f) Neural Network Model  (NN-Approx-MaMoRL)
 
     g) Random Walk Baseline
 
-In each folder, there is subfolders:
 
+# 4) Remarks
 
-a) Modules -- file with reward functions 
-
-b) Train.py -- file to train the model 
-
-c) run.py -- file to run the model. Model will store the results in a csv file
-
-
-# 4) Changing parameter values 
-
-You can change parameter values through the respective run and train file at the top. 
-
-You can change the following :
-
-1) MaxSpeed of ship 
-
-2) Max OutDeg of node
-
-3) Input file name 
-
-4) Result file name
-
-5) Epoch value (in Train.py file)
-
-6) iterations value (in Train.py file)
-
-7) Number of ships
-
-# 5) Output
-
-Output of training will be set of P/Q tables stored in Data subdirectory
-
-Output of run will be information on the ship actions, including time and fuel taken. If a collision occurs, it will note that as well. 
-
-# Remark
-Please note exact model, due to system constraints, will not run for more than the parameters as below:
-```
-2 ships, 400 nodes, outDeg 6
-```
-** Certain cases, a few runs are needed for a successful run **
+** Each folder has a README file with a more comprehensive explanation **
+** Please contact Sepideh Nikookar at sn627@njit.edu if you have any questions **
